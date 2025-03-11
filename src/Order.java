@@ -1,20 +1,28 @@
+import java.util.HashMap;
 import java.util.Map;
 
 public class Order {
-    private int id;
-    private Position position;
-    private Map<Product, Integer> items;
+    private final int id;
+    private final Position position;
+    private final Map<Product, Integer> items;
     private boolean isFulfilled;
 
-    public Order(int id, Position position, Map<Product, Integer> items) {
+    public Order(int id, Position position) {
         this.id = id;
         this.position = position;
-        this.items = items;
+        this.items = new HashMap<>();
+        this.isFulfilled = false;
+    }
+
+    public Order(int id, int row, int col) {
+        this.id = id;
+        this.position = new Position(row, col);
+        this.items = new HashMap<>();
         this.isFulfilled = false;
     }
 
     public void addProduct(Product product, int quantity) {
-        items.put(product, quantity);
+        items.put(product, items.getOrDefault(product, 0) + quantity);
     }
 
     public void markAsFulfilled() {
@@ -35,6 +43,11 @@ public class Order {
 
     public boolean isFulfilled() {
         return isFulfilled;
+    }
+
+    @Override
+    public String toString() {
+        return "Order" + id + ", location=" + position + ", items=" + items;
     }
 
 }

@@ -1,11 +1,11 @@
 public class Position {
 
-    int col;
     int row;
+    int col;
 
-    public Position(int col, int row) {
-        this.col = col;
+    public Position(int row, int col) {
         this.row = row;
+        this.col = col;
     }
 
     public int getCol() {
@@ -22,5 +22,10 @@ public class Position {
 
     public void setRow(int row) {
         this.row = row;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + row + "," + col + "]";
     }
 }

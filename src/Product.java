@@ -15,4 +15,9 @@ public class Product {
         return weight;
     }
 
+    @Override
+    public String toString() {
+        return "Product" + id + " (weight=" + weight + ")";
+    }
+
 }
