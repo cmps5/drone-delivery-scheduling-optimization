@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Simulation {
@@ -18,6 +19,15 @@ public class Simulation {
         this.orders = orders;
         this.maxTurns = maxTurns;
         this.currentTurn = 0;
+    }
+
+
+    public Solution generateInitialSolution() {
+        List<List<String>> initialCommands = new ArrayList<>();
+
+        // @ TODO
+
+        return new Solution(initialCommands, this);
     }
 
     public void run() {
@@ -85,6 +95,7 @@ public class Simulation {
         }
         return dronesString.toString();
     }
+
     private String warehousesToString(List<Warehouse> warehouses) {
         StringBuilder warehousesString = new StringBuilder();
         for (Warehouse warehouse : warehouses) {

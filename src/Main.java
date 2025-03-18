@@ -14,8 +14,16 @@ public class Main {
             // Print the simulation details
             System.out.println(simulation);
 
-            // Run the simulation
-            //simulation.run();
+            Solution initialSolution = simulation.generateInitialSolution();
+
+            // Apply Hill Climbing
+            Solution bestHillClimbingSolution = HillClimbing.hillClimbing(initialSolution);
+            System.out.println("Best fitness (Hill Climbing): " + bestHillClimbingSolution.calculateFitness());
+
+            // Apply Simulated Annealing
+            Solution bestSASolution = SimulatedAnnealing.simulatedAnnealing(initialSolution, 1000, 0.99);
+            System.out.println("Best fitness (Simulated Annealing): " + bestSASolution.calculateFitness());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
