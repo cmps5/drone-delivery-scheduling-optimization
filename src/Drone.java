@@ -42,7 +42,7 @@ public class Drone {
         }
     }
 
-    private int getCurrentLoad() {
+    public int getCurrentLoad() {
         return inventory.entrySet().stream()
                 .mapToInt(entry -> entry.getKey().getWeight() * entry.getValue())
                 .sum();

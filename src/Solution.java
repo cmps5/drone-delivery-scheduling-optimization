@@ -36,7 +36,12 @@ public class Solution {
         int totalScore = 0;
         int maxTurns = simulation.getMaxTurns();
 
-        // @ TODO
+        List<Order> orders = simulation.getOrders();
+        for (Order order : orders) {
+            if(!order.isFulfilled())
+                continue;
+            totalScore += 100 * (maxTurns - order.getTurn())/maxTurns;
+        }
 
         return totalScore;
     }

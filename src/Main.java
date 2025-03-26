@@ -12,13 +12,16 @@ public class Main {
             Simulation simulation = readInput("input/ex.in");
 
             // Print the simulation details
-            System.out.println(simulation);
+            //System.out.println(simulation);
 
             Solution initialSolution = simulation.generateInitialSolution();
+            System.out.println(initialSolution.getDroneCommands());
 
             // Apply Hill Climbing
             Solution bestHillClimbingSolution = HillClimbing.hillClimbing(initialSolution);
             System.out.println("Best fitness (Hill Climbing): " + bestHillClimbingSolution.calculateFitness());
+
+            //System.out.println("---------------");
 
             // Apply Simulated Annealing
             Solution bestSASolution = SimulatedAnnealing.simulatedAnnealing(initialSolution, 1000, 0.99);

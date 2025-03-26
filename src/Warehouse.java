@@ -47,4 +47,7 @@ public class Warehouse {
         return "Warehouse" + id + ", location=" + position + ", stock=" + stock;
     }
 
+    public Map<Product, Integer> getStock() {
+        return this.stock;
+    }
 }

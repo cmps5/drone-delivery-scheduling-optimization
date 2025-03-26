@@ -6,12 +6,14 @@ public class Order {
     private final Position position;
     private final Map<Product, Integer> items;
     private boolean isFulfilled;
+    private int turn;
 
     public Order(int id, Position position) {
         this.id = id;
         this.position = position;
         this.items = new HashMap<>();
         this.isFulfilled = false;
+        this.turn = Integer.MAX_VALUE;
     }
 
     public Order(int id, int row, int col) {
@@ -45,9 +47,21 @@ public class Order {
         return isFulfilled;
     }
 
+    public void setFulfilled(boolean fulfilled) {
+        isFulfilled = fulfilled;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+
     @Override
     public String toString() {
-        return "Order" + id + ", location=" + position + ", items=" + items;
+        return "Order" + id + ", location=" + position + ", items=" + items + "isFulfilled=" + isFulfilled;
     }
 
 }

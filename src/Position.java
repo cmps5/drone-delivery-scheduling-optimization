@@ -8,6 +8,12 @@ public class Position {
         this.col = col;
     }
 
+    public double distanceTo(Position other) {
+        int dr = this.row - other.row;
+        int dc = this.col - other.col;
+        return Math.sqrt(dr*dr + dc*dc);
+    }
+
     public int getCol() {
         return col;
     }
