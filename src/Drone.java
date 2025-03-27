@@ -51,10 +51,10 @@ public class Drone {
     /*
      * Deliver products to an order.
      */
-    public void deliver(Product product, int quantity, Order order) {
+    public void deliver(Product product, int quantity, Order order, int turn) {
         if (inventory.getOrDefault(product, 0) >= quantity) {
             inventory.put(product, inventory.get(product) - quantity);
-            order.addProduct(product, quantity);
+            order.addDelivery(product, quantity, turn);
             System.out.println("Drone " + id + " delivered " + quantity + " of product " + product.getId()
                     + " to order " + order.getId());
         } else {
