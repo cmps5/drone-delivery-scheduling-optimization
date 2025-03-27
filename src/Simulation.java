@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Simulation {
 
@@ -11,6 +12,7 @@ public class Simulation {
     private final int maxTurns;
     private int currentTurn;
 
+
     public Simulation(int rows, int cols, List<Drone> drones, List<Warehouse> warehouses, List<Order> orders, int maxTurns) {
         this.rows = rows;
         this.cols = cols;
@@ -18,25 +20,98 @@ public class Simulation {
         this.warehouses = warehouses;
         this.orders = orders;
         this.maxTurns = maxTurns;
-        this.currentTurn = 0;
+        this.currentTurn = 1;
     }
-
 
     public Solution generateInitialSolution() {
         List<List<String>> initialCommands = new ArrayList<>();
+        for (int i = 0; i < drones.size(); i++) {
+            initialCommands.add(new ArrayList<>());
+        }
 
-        // @ TODO
-
-        return new Solution(initialCommands, this);
-    }
-
-    public void run() {
         while (!isFinished()) {
             System.out.println("Turn " + currentTurn);
-            // @TODO
+            boolean anyAction = false;
+
+            for (int droneId = 0; droneId < drones.size(); droneId++) {
+                Drone drone = drones.get(droneId);
+
+                if (!drone.getInventory().isEmpty()) {
+                    continue;
+                }
+
+                for (Order order : orders) {
+                    if (order.isFulfilled()) {
+                        continue;
+                    }
+                    
+                    Map<Product, Integer> pendingItems = order.getPendingItems();
+                    if (pendingItems.isEmpty()) {
+                        continue;
+                    }
+
+                    // process pending orders
+                    for (Map.Entry<Product, Integer> entry : pendingItems.entrySet()) {
+                        Product product = entry.getKey();
+                        int needed = entry.getValue();
+
+                        // find warehouse with stock
+                        for (Warehouse warehouse : warehouses) {
+                            if (!warehouse.hasProduct(product, 1)) {
+                                continue;
+                            }
+
+                            // calculate possible qty
+                            int available = warehouse.getStock().get(product);
+                            int possible = Math.min(
+                                    needed,
+                                    Math.min(available,
+                                            (drone.getMaxPayload() - drone.getCurrentLoad()) / product.getWeight()
+                                    ));
+
+                            if (possible <= 0) {
+                                continue;
+                            }
+
+                            //System.out.println(drone.getId() + " Before loading " + drone.getInventory());
+
+                            // load
+                            drone.load(product, possible, warehouse);
+                            String loadCmd = String.format("%d L %d %d %d",
+                                    droneId, warehouse.getId(), product.getId(), possible);
+                            initialCommands.get(droneId).add(loadCmd);
+
+                            //System.out.println(drone.getId() + " After loading " + drone.getInventory());
+
+                            // deliver
+                            drone.deliver(product, possible, order, currentTurn);
+                            String deliverCmd = String.format("%d D %d %d %d",
+                                    droneId, order.getId(), product.getId(), possible);
+                            initialCommands.get(droneId).add(deliverCmd);
+
+                            //System.out.println(drone.getId() + " After delivery " + drone.getInventory());
+
+                            drone.setPosition(order.getPosition());
+
+                            anyAction = true;
+                            break; // one item per turn
+                        }
+
+                        if (anyAction) {
+                            break; // one order per turn per drone
+                        }
+                    }
+
+                    if (anyAction) {
+                        break;
+                    }
+                }
+            }
+
             nextTurn();
         }
 
+        return new Solution(initialCommands, this);
     }
 
     public void nextTurn() {
@@ -44,7 +119,7 @@ public class Simulation {
     }
 
     public boolean isFinished() {
-        return currentTurn >= maxTurns;
+        return currentTurn > maxTurns;
     }
 
     public int getRows() {

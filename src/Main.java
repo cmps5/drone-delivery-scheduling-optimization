@@ -16,16 +16,16 @@ public class Main {
 
             Solution initialSolution = simulation.generateInitialSolution();
             System.out.println(initialSolution.getDroneCommands());
+            System.out.println("Initial fitness: " + initialSolution.calculateFitness());
 
             // Apply Hill Climbing
-            Solution bestHillClimbingSolution = HillClimbing.hillClimbing(initialSolution);
-            System.out.println("Best fitness (Hill Climbing): " + bestHillClimbingSolution.calculateFitness());
+            //Solution bestHillClimbingSolution = HillClimbing.hillClimbing(initialSolution);
+            //System.out.println("Best fitness (Hill Climbing): " + bestHillClimbingSolution.calculateFitness());
 
-            //System.out.println("---------------");
 
             // Apply Simulated Annealing
-            Solution bestSASolution = SimulatedAnnealing.simulatedAnnealing(initialSolution, 1000, 0.99);
-            System.out.println("Best fitness (Simulated Annealing): " + bestSASolution.calculateFitness());
+            //Solution bestSASolution = SimulatedAnnealing.simulatedAnnealing(initialSolution, 1000, 0.99);
+            //System.out.println("Best fitness (Simulated Annealing): " + bestSASolution.calculateFitness());
 
         } catch (IOException e) {
             e.printStackTrace();
