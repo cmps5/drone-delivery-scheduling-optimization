@@ -32,7 +32,7 @@ public class Solution {
         return new Solution(newDroneCommands, simulation);
     }
 
-    public int calculateFitness() {
+    public int calculateScore() {
         int totalScore = 0;
         int maxTurns = simulation.getMaxTurns();
 

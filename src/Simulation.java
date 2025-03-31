@@ -12,7 +12,6 @@ public class Simulation {
     private final int maxTurns;
     private int currentTurn;
 
-
     public Simulation(int rows, int cols, List<Drone> drones, List<Warehouse> warehouses, List<Order> orders, int maxTurns) {
         this.rows = rows;
         this.cols = cols;
@@ -25,26 +24,41 @@ public class Simulation {
 
     public Solution generateInitialSolution() {
         List<List<String>> initialCommands = new ArrayList<>();
+        String solution = "";
         for (int i = 0; i < drones.size(); i++) {
             initialCommands.add(new ArrayList<>());
         }
 
+        //System.out.println(orders);
+
+        //boolean[] ordFul = new boolean[orders.size()];
+
         while (!isFinished()) {
-            System.out.println("Turn " + currentTurn);
-            boolean anyAction = false;
+            //System.out.println("Turn " + currentTurn);
+            boolean allCompleted = true;
+            boolean[] beingUsed = new boolean[drones.size()];
 
             for (int droneId = 0; droneId < drones.size(); droneId++) {
                 Drone drone = drones.get(droneId);
 
+                //System.out.println(drone);
                 if (!drone.getInventory().isEmpty()) {
                     continue;
                 }
 
-                for (Order order : orders) {
+                for (int i= 0; i<orders.size(); i++) {
+                    Order order = orders.get(i);
+                    //System.out.println("Drone" + droneId + ", " + order);
+                    if (beingUsed[droneId]) break;
+                    //System.out.println(order);
                     if (order.isFulfilled()) {
+                        //System.out.println("Out with " + order);
                         continue;
                     }
-                    
+                    //System.out.println("Checkup Drone" + droneId + ", order" + order);
+
+                    allCompleted = false; // there is at least one pending order
+
                     Map<Product, Integer> pendingItems = order.getPendingItems();
                     if (pendingItems.isEmpty()) {
                         continue;
@@ -63,54 +77,70 @@ public class Simulation {
 
                             // calculate possible qty
                             int available = warehouse.getStock().get(product);
-                            int possible = Math.min(
-                                    needed,
-                                    Math.min(available,
-                                            (drone.getMaxPayload() - drone.getCurrentLoad()) / product.getWeight()
-                                    ));
-
-                            if (possible <= 0) {
-                                continue;
-                            }
+                            int possible = Math.min(needed, Math.min(available, (drone.getMaxPayload() - drone.getCurrentLoad()) / product.getWeight()));
 
                             //System.out.println(drone.getId() + " Before loading " + drone.getInventory());
 
                             // load
                             drone.load(product, possible, warehouse);
-                            String loadCmd = String.format("%d L %d %d %d",
-                                    droneId, warehouse.getId(), product.getId(), possible);
+                            String loadCmd = String.format("%d L %d %d %d", droneId, warehouse.getId(), product.getId(), possible);
                             initialCommands.get(droneId).add(loadCmd);
+                            solution += loadCmd + "\n";
 
                             //System.out.println(drone.getId() + " After loading " + drone.getInventory());
 
                             // deliver
                             drone.deliver(product, possible, order, currentTurn);
-                            String deliverCmd = String.format("%d D %d %d %d",
-                                    droneId, order.getId(), product.getId(), possible);
+                            String deliverCmd = String.format("%d D %d %d %d", droneId, order.getId(), product.getId(), possible);
                             initialCommands.get(droneId).add(deliverCmd);
+                            drone.getInventory().remove(product);
+                            solution += deliverCmd + "\n";
 
                             //System.out.println(drone.getId() + " After delivery " + drone.getInventory());
 
-                            drone.setPosition(order.getPosition());
+                            //drone.setPosition(order.getPosition());
 
-                            anyAction = true;
+                            beingUsed[droneId] = true;
                             break; // one item per turn
                         }
 
-                        if (anyAction) {
+                        if (beingUsed[droneId]) {
                             break; // one order per turn per drone
                         }
                     }
-
-                    if (anyAction) {
-                        break;
-                    }
+                   /* if (order.isFulfilled()) {
+                        System.out.println("Order" + order.getId() + " completed");
+                        //ordFul[i] = true;
+                    }*/
                 }
+            }
+
+            // to avoid
+            if (allCompleted) {
+                /*for(int i= 0; i<orders.size(); i++)
+                    System.out.println(ordFul[i]);*/
+                System.out.println("All Done");
+                break;
             }
 
             nextTurn();
         }
 
+       /* int ful=0, noFul=0, lastFul=0, i=0;
+        for (Order order : orders){
+            if (order.isFulfilled()) {
+                ful++;
+                lastFul = i;
+
+            } else{
+                noFul ++;
+            }
+            i++;
+        }
+        System.out.println("Total Orders " + orders.size()+ ", ful " + ful
+                + " (last ful " + lastFul + "), noFul " + noFul);*/
+
+        System.out.println(solution);
         return new Solution(initialCommands, this);
     }
 
@@ -152,15 +182,7 @@ public class Simulation {
 
     @Override
     public String toString() {
-        return "==========================" +
-                "\nGrid: " + rows + "x" + cols + ", Turns: " + maxTurns +
-                "\n==========================" +
-                "\nDrones\n" + dronesToString(drones) +
-                "\n==========================" +
-                "\nWarehouses\n" + warehousesToString(warehouses) +
-                "\n==========================" +
-                "\nOrders\n" + ordersToString(orders) +
-                "\n==========================";
+        return "==========================" + "\nGrid: " + rows + "x" + cols + ", Turns: " + maxTurns + "\n==========================" + "\nDrones\n" + dronesToString(drones) + "\n==========================" + "\nWarehouses\n" + warehousesToString(warehouses) + "\n==========================" + "\nOrders\n" + ordersToString(orders) + "\n==========================";
     }
 
     private String dronesToString(List<Drone> drones) {
