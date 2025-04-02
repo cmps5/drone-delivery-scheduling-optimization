@@ -3,13 +3,13 @@ import java.util.Random;
 public class SimulatedAnnealing {
     public static Solution simulatedAnnealing(Solution initialSolution, double initialTemperature, double coolingRate) {
         Solution currentSolution = initialSolution;
-        int currentFitness = currentSolution.calculateFitness();
+        int currentFitness = currentSolution.calculateScore();
         double temperature = initialTemperature;
         Random random = new Random();
 
         while (temperature > 1) {
             Solution neighbor = currentSolution.generateNeighbor();
-            int neighborFitness = neighbor.calculateFitness();
+            int neighborFitness = neighbor.calculateScore();
 
 
             if (neighborFitness > currentFitness) {
