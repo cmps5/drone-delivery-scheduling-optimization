@@ -46,7 +46,7 @@ public class Simulation {
                     continue;
                 }
 
-                for (int i= 0; i<orders.size(); i++) {
+                for (int i = 0; i < orders.size(); i++) {
                     Order order = orders.get(i);
                     //System.out.println("Drone" + droneId + ", " + order);
                     if (beingUsed[droneId]) break;
@@ -119,7 +119,7 @@ public class Simulation {
             if (allCompleted) {
                 /*for(int i= 0; i<orders.size(); i++)
                     System.out.println(ordFul[i]);*/
-                System.out.println("All Done");
+                // System.out.println("All Done");
                 break;
             }
 
@@ -140,7 +140,7 @@ public class Simulation {
         System.out.println("Total Orders " + orders.size()+ ", ful " + ful
                 + " (last ful " + lastFul + "), noFul " + noFul);*/
 
-        System.out.println(solution);
+        // System.out.println(solution);
         return new Solution(initialCommands, this);
     }
 
